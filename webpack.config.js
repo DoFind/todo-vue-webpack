@@ -97,6 +97,10 @@ if (isDev) {
   )
 } 
 else {
+  config.entry = {
+    app: path.join(__dirname, 'src/index.js'),
+    vendor: ['vue']
+  }
   config.output.filename = '[name].[chunkhash:8].js'
 
   config.module.rules.push (
@@ -119,7 +123,15 @@ else {
   )
   config.plugins.push (
     // 指定输出静态文件名
-    new ExtractPlugin('styles.[contentHash:8].css')
+    new ExtractPlugin('styles.[contentHash:8].css'),
+    // 打包第三方类库
+    new webpack.optimize.CommonsChunkPlugin({
+      name: 'vendor'
+    }),
+    // 单独打包 webpack， 'vendor' 务必在前
+    new webpack.optimize.CommonsChunkPlugin({
+      name: 'runtime'
+    })
   )
 }
 module.exports = config;
