@@ -24,21 +24,21 @@ const config = {
       //   test: /\.jsx$/,
       //   loader: 'babel-loader'
       // },
-      // {
-      //   test: /\.css$/,
-      //   use: [
-      //     'style-loader',
-      //     'css-loader'
-      //   ]
-      // },
+      {
+        test: /\.css$/,
+        use: [
+          'style-loader',
+          'css-loader'
+        ]
+      },
       {
         test: /\.(gif|jpg|jpeg|png|svg)$/,
         use: [
           {
             loader: 'url-loader',
             options: {
-              limit: 1024,
-              name: '[name].[ext]'
+              limit: 8192,
+              name: 'img/[name].[ext]'
             }
           }
         ]
@@ -52,7 +52,6 @@ const config = {
         NODE_ENV: isDev ? '"development"' : '"production"'
       }
     }),
-    // 教程里是 HTML
     new htmlPlugin()
   ]
 }
@@ -101,7 +100,7 @@ else {
     app: path.join(__dirname, 'src/index.js'),
     vendor: ['vue']
   }
-  config.output.filename = '[name].[chunkhash:8].js'
+  config.output.filename = 'js/[name].[chunkhash:8].js'
 
   config.module.rules.push (
     {
@@ -123,7 +122,7 @@ else {
   )
   config.plugins.push (
     // 指定输出静态文件名
-    new ExtractPlugin('styles.[contentHash:8].css'),
+    new ExtractPlugin('css/styles.[contentHash:8].css'),
     // 打包第三方类库
     new webpack.optimize.CommonsChunkPlugin({
       name: 'vendor'

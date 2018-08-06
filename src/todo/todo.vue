@@ -7,12 +7,13 @@
       placeholder="接下來做什麼？"
       @keyup.enter="addTodo"
     >
-    <!-- <item :todo="todo"></item> -->
     <item
       :todo='todo'
+      :editTodos='editTodos'
       v-for="todo in filteredTodos"
-      :key="todo.id"
       @del='deleteTodo'
+      @eidtTodo='eidtTodo'
+      @editedTodo='editedTodo'
     />
     <tabs 
       :filter="filter" 
@@ -26,7 +27,20 @@
 <script>
 import Item from './item.vue'
 import Tabs from './tabs.vue'
-let id = 0
+
+//存取localStorage中的数据
+var store = {
+  save(key,value){
+    localStorage.setItem(key,JSON.stringify(value));
+  },
+  fetch(key){
+    return JSON.parse(localStorage.getItem(key)) || [];
+  }
+}
+
+//取出所有的值
+var todos = store.fetch("cc-todolist");
+
 export default {
   data() {
     return {
@@ -35,24 +49,17 @@ export default {
       //   content: 'this is todo',
       //   completed: false
       // },
-      todos: [
-        {
-          id: id++,
-          content: '吃饭',
-          completed: false
-        },
-        {
-          id: id++,
-          content: '睡觉',
-          completed: true
-        },
-        {
-          id: id++,
-          content: '打豆豆',
-          completed: false
-        }
-      ],
+      todos: todos,
+      editTodos: {},
       filter: 'all'
+    }
+  },
+  watch: {
+    todos: {
+      handler:function(){
+        store.save("cc-todolist",this.todos);
+      },
+      deep:true
     }
   },
   components: {
@@ -71,20 +78,27 @@ export default {
   methods: {
     addTodo(e) {
       this.todos.unshift({
-        id: id++,
+        // id: id++,
         content: e.target.value.trim(),
         completed: false
       })
       e.target.value = ''
     },
-    deleteTodo(id) {
-      this.todos.splice(this.todos.findIndex(todo => todo.id === id), 1)
+    deleteTodo(item) {
+      this.todos.splice(this.todos.findIndex(todo => todo === item), 1)
     },
     toggleFilter(state) {
       this.filter = state
     },
     clearAllCompleted() {
       this.todos = this.todos.filter(todo => !todo.completed)
+    },
+    // edit
+    eidtTodo(item) {
+      this.editTodos = item;
+    },
+    editedTodo() {
+      this.editTodos = {};
     }
   }
 }
